@@ -174,45 +174,54 @@ vector<ll> sieve(int n) {
   return vect;
 }
 
-int solve(int n);
+ll solve(ll n);
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(0);
 
-  int l, r; cin >> l >> r;
+  ll l, r; cin >> l >> r;
+  if (l == 0) cout << solve(r);
+  else
   cout << solve(r) - solve(l - 1) << endl;
 
   return 0;
 }
 
 
-int solve(int r) {
+ll solve(ll r) {
   string R = to_string(r);
   int N = R.length();
 
-  ll dp[20][11][2][2] = { };
+  ll dp[20][11][2][2] = {}; // pos, prev_digit, leading_zero, tight
 
-  dp[0][10][1][1] = 1;
+  dp[0][10][1][1] = 1; // At pos 0, no digit used (10 = dummy), leading zero, tight = 1
 
-  for (int n = 0; n < N; n++) {
-    for (int x = 0; x <= 10; x++) {
-      for (int leading_zero = 0; leading_zero <= 1; leading_zero++) {
+  for (int pos = 0; pos < N; pos++) {
+    for (int prev = 0; prev <= 10; prev++) { // prev digit from 0-9 or 10 = none
+      for (int lead = 0; lead <= 1; lead++) {
         for (int tight = 0; tight <= 1; tight++) {
-          int ub = tight ? R[n] - '0' : 9;
+          int ub = tight ? R[pos] - '0' : 9;
           for (int d = 0; d <= ub; d++) {
-            if (d == x && !leading_zero)
-              continue;
-            dp[n][x][leading_zero][tight] +=
-                dp[n - 1][d][leading_zero & (d == 0)][tight & (d == ub)];
+            if (d == prev && !lead) continue; // disallow same digit twice (except leading zeros)
+
+            int n_lead = lead & (d == 0);
+            int n_tight = tight & (d == ub);
+
+            int new_prev = (n_lead ? 10 : d); // keep prev as 10 if still leading zeros
+
+            dp[pos + 1][new_prev][n_lead][n_tight] += dp[pos][prev][lead][tight];
           }
         }
       }
     }
   }
 
-  int ans = 0;
-  for(int d = 0; d < 10; d++) ans += dp[N][d][0][0];
-  for(int d = 0; d < 10; d++) ans -= dp[N][d][1][0];
+  ll ans = 0;
+  for (int prev = 0; prev <= 9; prev++) {
+    ans += dp[N][prev][0][0]; // non-leading-zero, non-tight
+    ans += dp[N][prev][0][1]; // non-leading-zero, tight
+  }
+
   return ans;
 }

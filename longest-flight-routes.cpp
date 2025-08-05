@@ -1,5 +1,6 @@
 
 #include <bits/stdc++.h>
+#include <queue>
 using namespace std;
 
 #define pb push_back
@@ -15,7 +16,6 @@ void solve() {
   int n, m;
   cin >> n >> m;
 
-  // Input graph
   for (int i = 0; i < m; ++i) {
     int u, v;
     cin >> u >> v;
@@ -26,19 +26,18 @@ void solve() {
   vector<int> parent(n + 1, -1);
 
   dist[1] = -1;
-  set<pii> st; // (dist, node)
-  st.insert({dist[1], 1});
+  priority_queue<pii> pq;
+  pq.push({dist[1], 1});
 
-  while (!st.empty()) {
-    auto [curDist, u] = *st.begin();
-    st.erase(st.begin());
+  while (!pq.empty()) {
+    auto [curDist, u] = pq.top();
+    pq.pop();
 
     for (auto [v, w] : G[u]) {
       if (dist[v] > curDist + w) {
-        st.erase({dist[v], v}); // Remove old entry if present
         dist[v] = curDist + w;
         parent[v] = u;
-        st.insert({dist[v], v});
+        pq.push({dist[v], v});
       }
     }
   }
