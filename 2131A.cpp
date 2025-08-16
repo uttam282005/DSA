@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <vector>
 using namespace std;
 
 // Defines
@@ -187,18 +188,21 @@ int main() {
 }
 
 void solve() {
-  int a, b, c, d;
-  cin >> a >> b >> c >> d;
-  for (int x = a + 1; x <= c; x++) {
-    ll s = 1LL * a * b / gcd(1LL * a * b, x);
-    int lower = b / s;
-    int upper = d / s;
-    if (upper - lower <= 0)
-      continue;
-
-    cout << x << " " << s * (lower + 1) << endl;
-    return;
+  int n;
+  cin >> n;
+  vector<int> a(n);
+  vector<int> b(n);
+  for (int i = 0; i < n; i++) {
+    cin >> a[i];
   }
-  cout << -1 << " " << -1 << endl;
+  for (int i = 0; i < n; i++) {
+    cin >> b[i];
+  }
+  ll ans = 0;
 
+  for(int i = 0; i < n; i++) {
+    if (a[i] > b[i]) ans += (a[i] - b[i]);
+  }
+
+  cout << ans + 1 << endl;
 }

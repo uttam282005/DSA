@@ -215,7 +215,7 @@ void solve() {
       continue;
     }
     
-    if ((1LL*tot * b) % diff != 0) {
+    if ((tot * b) % diff != 0) {
       cout << "NO\n";
       continue;
     }

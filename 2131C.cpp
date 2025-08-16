@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include <set>
+#include <vector>
 using namespace std;
 
 // Defines
@@ -187,18 +189,33 @@ int main() {
 }
 
 void solve() {
-  int a, b, c, d;
-  cin >> a >> b >> c >> d;
-  for (int x = a + 1; x <= c; x++) {
-    ll s = 1LL * a * b / gcd(1LL * a * b, x);
-    int lower = b / s;
-    int upper = d / s;
-    if (upper - lower <= 0)
-      continue;
+  int n, k;
+  cin >> n >> k;
+  vector<int> t(n);
+  vector<int> s(n);
 
-    cout << x << " " << s * (lower + 1) << endl;
-    return;
+  map<int, int> has;
+  for (int i = 0; i < n; i++) {
+    cin >> s[i];
+    has[s[i] % k]++;
   }
-  cout << -1 << " " << -1 << endl;
 
+  for (int i = 0; i < n; i++)
+    cin >> t[i];
+
+  for(int i = 0; i < n; i++) {
+    if (has[t[i] % k] > 0) {
+      has[t[i] % k]--;
+      t[i] = -1;
+    } else if (has[k - (t[i] % k)] > 0) has[k - (t[i] % k)]--, t[i] = -1;
+  }
+
+  for(int num : t) {
+    if (num != -1) {
+      cout << "NO" << endl;
+      return;
+    }
+  }
+
+  cout << "YES" << endl;
 }
