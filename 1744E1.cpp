@@ -171,7 +171,7 @@ vector<ll> sieve(int n) {
   return vect;
 }
 
-void solve();
+// void solve();
 
 int main() {
   ios::sync_with_stdio(false);

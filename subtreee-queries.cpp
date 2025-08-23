@@ -97,69 +97,7 @@ ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n
 ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-
-
-/**
- * Precompute factorials and inverse factorials modulo MOD.
- * Uses Fermat’s little theorem for modular inverse (MOD must be prime).
- */
-void calculate_factorial_bulk() {
-    fact[0] = 1;
-    for (int i = 1; i < N; i++)
-        fact[i] = fact[i - 1] * i % MOD;
-
-    inv_fact[N - 1] = mminvprime(fact[N - 1], MOD);  // fact[n]^{-1} mod MOD
-    for (int i = N - 2; i >= 0; i--)
-        inv_fact[i] = inv_fact[i + 1] * (i + 1) % MOD;
-}
-
-/**
- * Computes nCr % MOD using precomputed factorials.
- */
-ll nCr(int n, int r) {
-    if (r < 0 || r > n) return 0;
-    return fact[n] * inv_fact[r] % MOD * inv_fact[n - r] % MOD;
-}
-
-/**
- * Simple factorial function for small values of n (without mod).
- */
-ll factorialSmall(int n) {
-    if (n == 0 || n == 1) return 1;
-    ll res = 1;
-    for (int i = 2; i <= n; i++)
-        res *= i;
-    return res;
-}
-
-/**
- * Computes nCr without mod (only for small inputs), avoids overflow up to ~20.
- */
-ll c(int n, int r) {
-    if (r < 0 || r > n) return 0;
-    ll res = 1;
-    for (int i = 1; i <= r; i++) {
-        res = res * (n - i + 1) / i;
-    }
-    return res;
-}
-
-vector<int> T[N];
-int values[N];
 void solve() {
-    int  n, q;
-    cin >> n >> q;
-    for(int i = 1; i <= n; i++) cin >> values[i];
-    for(int i = 0; i < n - 1; i++) {
-        int s, d;
-        cin >> s >> d;
-        T[s].pb(d);
-        T[d].pb(s);
-    }
-
-    while(q--) {
-
-    }
 
 }
 

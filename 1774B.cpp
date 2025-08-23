@@ -169,7 +169,7 @@ int main() {
 }
 
 void solve() {
-  int n, m, k; cin >> n >> m >> k; 
+  int n, m, k; cin >> n >> m >> k;
   vi v(m);
   rep(i, 0, m) cin >> v[i];
   if (m < k) {

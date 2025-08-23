@@ -1,2 +1,4 @@
--1 2 
--1 3 -1 
+/home/uttam/Documents/cp/1744E1.cpp: In function ‘int main()’:
+/home/uttam/Documents/cp/1744E1.cpp:183:5: error: ‘solve’ was not declared in this scope
+  183 |     solve();
+      |     ^~~~~
