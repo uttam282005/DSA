@@ -33,13 +33,13 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vll;
 typedef vector<pii> vpii;
-typedef tree<pair<ll, ll>, null_type, less<pair<ll, ll>>, rb_tree_tag, tree_order_statistics_node_update > pbds; // find_by_order, order_of_key
+typedef tree<pair<ll, ll>, null_type, less<pair<ll, ll>>, rb_tree_tag, tree_order_statistics_node_update > pbds;
 
 // Constants
 const int MOD = 1e9 + 7;
 const int INF = 1e9;
 const ll LLINF = 1e18;
-const int N = 2e5 + 1;
+const int N = 5e5 + 1;
 
 // Factorials and Modular Arithmetic
 int fact[N + 1];
@@ -47,13 +47,13 @@ int inv_fact[N + 1];
 
 #define debug(...) _f(#__VA_ARGS__, __VA_ARGS__)
 template <typename Arg1> void _f(const char *name, Arg1 &&arg1) {
-    cout << name << " : " << arg1 << endl;
+  cout << name << " : " << arg1 << endl;
 }
 template <typename Arg1, typename... Args>
 void _f(const char *names, Arg1 &&arg1, Args &&...args) {
-    const char *comma = strchr(names + 1, ',');
-    cout.write(names, comma - names) << ":" << arg1 << "|";
-    _f(comma + 1, args...);
+  const char *comma = strchr(names + 1, ',');
+  cout.write(names, comma - names) << ":" << arg1 << "|";
+  _f(comma + 1, args...);
 }
 
 void _print(ll t) {cerr << t;}
@@ -77,11 +77,11 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 void _print(pbds v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-/*---------------------------------------------------------------------------------------------------------------------------*/
+
 ll gcd(ll a, ll b) {if (b > a) {return gcd(b, a);} if (b == 0) {return a;} return gcd(b, a % b);}
 ll expo(ll a, ll b, ll mod) {ll res = 1; while (b > 0) {if (b & 1)res = (res * a) % mod; a = (a * a) % mod; b = b >> 1;} return res;}
-void extendgcd(ll a, ll b, ll*v) {if (b == 0) {v[0] = 1; v[1] = 0; v[2] = a; return ;} extendgcd(b, a % b, v); ll x = v[1]; v[1] = v[0] - v[1] * (a / b); v[0] = x; return;} //pass an arry of size1 3
-ll mminv(ll a, ll b) {ll arr[3]; extendgcd(a, b, arr); return arr[0];} //for non prime b
+void extendgcd(ll a, ll b, ll*v) {if (b == 0) {v[0] = 1; v[1] = 0; v[2] = a; return ;} extendgcd(b, a % b, v); ll x = v[1]; v[1] = v[0] - v[1] * (a / b); v[0] = x; return;}
+ll mminv(ll a, ll b) {ll arr[3]; extendgcd(a, b, arr); return arr[0];}
 ll mminvprime(ll a, ll b) {return expo(a, b - 2, b);}
 bool revsort(ll a, ll b) {return a > b;}
 ll combination(ll n, ll r, ll m, ll *fact, ll *ifact) {ll val1 = fact[n]; ll val2 = ifact[n - r]; ll val3 = ifact[r]; return (((val1 * val2) % m) * val3) % m;}
@@ -90,31 +90,65 @@ vector<ll> sieve(int n) {int*arr = new int[n + 1](); vector<ll> vect; for (int i
 ll mod_add(ll a, ll b, ll m) {a = a % m; b = b % m; return (((a + b) % m) + m) % m;}
 ll mod_mul(ll a, ll b, ll m) {a = a % m; b = b % m; return (((a * b) % m) + m) % m;}
 ll mod_sub(ll a, ll b, ll m) {a = a % m; b = b % m; return (((a - b) % m) + m) % m;}
-ll mod_div(ll a, ll b, ll m) {a = a % m; b = b % m; return (mod_mul(a, mminvprime(b, m), m) + m) % m;}  //only for prime m
-ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n /= 2;} for (ll i = 3; i <= sqrt(n); i += 2) {if (n % i == 0) {while (n % i == 0)n /= i; number = (number / i * (i - 1));}} if (n > 1)number = (number / n * (n - 1)) ; return number;} //O(sqrt(N))
+ll mod_div(ll a, ll b, ll m) {a = a % m; b = b % m; return (mod_mul(a, mminvprime(b, m), m) + m) % m;}
+ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n /= 2;} for (ll i = 3; i <= sqrt(n); i += 2) {if (n % i == 0) {while (n % i == 0)n /= i; number = (number / i * (i - 1));}} if (n > 1)number = (number / n * (n - 1)) ; return number;}
 ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
-/*--------------------------------------------------------------------------------------------------------------------------*/
+
+
+int parent[N];
+int sz[N];
+
+int find(int node) {
+  if (parent[node] == node) return node;
+  return parent[node] = find(parent[node]);
+}
+
+void join(int a, int b) {
+  a = find(a);
+  b = find(b);
+
+  if (a == b) return;
+
+  if (sz[b] > sz[a]) swap(a, b);
+
+  parent[b] = a;
+  sz[a] += sz[b];
+}
 
 void solve() {
-    int n;
-    cin >> n;
-    vi X(n);
-    vi Y(n);
+  int n, m; cin >> n >> m;
 
-    for(int i = 0; i < n; i++) {
-        cin >> X[i] >> Y[i];
+  for(int i = 0; i < n; i++) sz[i] = 1;
+  for(int i = 0; i < n; i++) parent[i] = i;
+
+  for(int i = 0; i < m; i++) {
+    int k; cin >> k;
+
+    if (k == 0) continue;
+
+    int first; cin >> first;
+    first--;
+
+    for(int j = 1; j < k; j++) {
+      int node; cin >> node;
+      node--;
+      join(first, node);
     }
+  }
+
+  for(int i = 0; i < n; i++) cout << sz[find(i)] << " ";
+
+  cout << endl;
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
+  ios::sync_with_stdio(false);
+  cin.tie(0);
 
-    int t = 1;
-    cin >> t;
-    while (t--) {
-        solve();
-    }
+  int t = 1;
+  while (t--) {
+    solve();
+  }
 
-    return 0;
+  return 0;
 }
