@@ -99,10 +99,8 @@ void solve() {
     int n; cin >> n;
     vector<int> a(n);
     vector<int> b(n);
-    
     for(int i = 0; i < n; i++) cin >> a[i];
     for(int i = 0; i < n; i++) cin >> b[i];
-    
     map<pair<int, int>, int> cnt;
     int free = 0;
     for(int i = 0; i < n; i++) {
@@ -112,29 +110,24 @@ void solve() {
             }
            continue; 
         }
-        
         if (b[i] == 0) {
             cnt[{0, 0}]++;
             continue;
         }
-        
         int ai = abs(a[i]);
         int bi = abs(b[i]);
         int g = gcd(ai, bi);
         ai = ai / g;
         bi = bi / g;
-        
         if ((a[i] < 0 and b[i] < 0) or (a[i] > 0 and b[i] > 0)) {
             cnt[{-bi, ai}]++;
         } else cnt[{bi, ai}]++;
     }
-    
     int ans = 0;
     for(auto [key, val] : cnt) {
         ans = max(ans, val);
     }
     ans += free;
-    
     cout << ans << endl;
 }
 

@@ -1,6 +1,8 @@
 #include<bits/stdc++.h>
+#include <climits>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
+#include <vector>
 
 using namespace std;
 using namespace chrono;
@@ -95,6 +97,15 @@ ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n
 ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
+
+int helper(vector<int> &X) {
+    int n = size(X);
+
+    sort(all(X));
+    int x_cnt = X[n / 2] - X[(n - 1) / 2] + 1;
+    return x_cnt;
+}
+
 void solve() {
     int n;
     cin >> n;
@@ -104,6 +115,11 @@ void solve() {
     for(int i = 0; i < n; i++) {
         cin >> X[i] >> Y[i];
     }
+
+    int x_cnt = helper(X);
+    int y_cnt = helper(Y);
+
+    cout << 1LL * x_cnt * y_cnt << endl;
 }
 
 int main() {
