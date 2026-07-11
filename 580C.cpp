@@ -1,4 +1,3 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
@@ -100,42 +99,56 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
+void dfs(vector<pii>& cc, vector<vector<int>>& G, vector<int>& isColored, int parent = 0, int node = 1) {
+    cc[node].first = cc[parent].first + isColored[node];
+    if (!isColored[node]) cc[node].first = 0;
+    cc[node].second = max(cc[node].first, cc[parent].second);
 
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
-
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
+    for(int child : G[node]) {
+        if (child != parent) {
+            dfs(cc, G, isColored, node, child);
+        }
     }
-
-    return subordinates[b] = sub;
 }
 
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
+    int n, m; cin >> n >> m;
+    vector<int> isColored(n + 1);
 
-    int n; cin >> n;
+    for(int i = 1; i <= n; i++) cin >> isColored[i];
+
+    vector<vector<int>> G(n + 1);
+    for(int i = 0; i < n - 1; i++) {
+        int s, d; cin >> s >> d;
+        G[s].pb(d);
+        G[d].pb(s);
+    }
+
+    vector<pii> cc(n + 1);
+
+    dfs(cc, G, isColored);
+
+    auto isLeaf = [&](int node) {
+        return G[node].size() == 1;
+    };
+
+    int ans = 0;
     for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+        // debug(cc[i].second, i);
+        if (isLeaf(i) and cc[i].second <= m) ans++;
     }
 
-    dfs(1);
-
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
-    }
-
+    cout << ans << endl;
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
 
-    solve();
+    int t = 1;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }

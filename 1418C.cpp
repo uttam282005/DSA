@@ -1,4 +1,3 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
@@ -100,42 +99,50 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
-
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
-
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
-    }
-
-    return subordinates[b] = sub;
-}
-
+// i -> i - 1 -> (i - 2, i - 3)
+// i -> i - 2 -> (i - 3, i - 4)
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
-
-    int n; cin >> n;
-    for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+    int n;
+    cin >> n;
+    vector<int> boss(n);
+    for(int i = 0; i < n; i++) cin >> boss[i];
+    vector<int> dp(n + 1, 0);
+    dp[1] = boss[0];
+    if (n == 1) {
+        cout << dp[1] << endl; return;
     }
 
-    dfs(1);
-
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
+    dp[2] = boss[0] + boss[1];
+    if (n == 2) {
+        cout << boss[0] << endl; return;
     }
 
+    dp[3] = boss[0] + boss[2];
+    if (n == 3) {
+        cout << min({boss[0] + boss[1], boss[0], boss[0] + boss[2]}) << endl; return;
+    }
+
+    dp[4] = boss[0] + boss[3];
+    if (n == 4) {
+        cout << dp[4] << endl; return;
+    }
+
+    for(int i = 5; i <= n; i++) {
+        dp[i] = min({ dp[i - 2], dp[i - 3], dp[i - 4] + boss[i - 2]  }) + boss[i - 1];
+    }
+
+    cout << min({ dp[n], dp[n - 1], dp[n - 2] }) << endl;
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
 
-    solve();
+    int t = 1;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }

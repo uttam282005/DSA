@@ -1,8 +1,6 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
-#include <vector>
 
 using namespace std;
 using namespace chrono;
@@ -100,42 +98,40 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
-
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
-
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
-    }
-
-    return subordinates[b] = sub;
-}
-
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
+    int a, b, t;
+    cin >> a >> b;
+    t = b;
 
-    int n; cin >> n;
-    for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+    int steps = 0;
+    vector<int> nums;
+    while(b > a) {
+        if (b % 2 == 0) b /= 2;
+        else if (b % 10 == 1) b /= 10;
+        else break;
+
+        steps++;
+        nums.pb(b);
     }
 
-    dfs(1);
+    reverse(all(nums));
 
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
+    cout << (b == a ? "YES" : "NO") << endl;
+    if (a == b) { 
+        cout << steps + 1 << endl;
+        for(auto n : nums) cout << n << " ";
+        cout << t << " ";
     }
-
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
 
-    solve();
+    int t = 1;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }

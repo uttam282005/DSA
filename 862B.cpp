@@ -1,4 +1,3 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
@@ -100,42 +99,57 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
-
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
-
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
-    }
-
-    return subordinates[b] = sub;
-}
-
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
+    int n;
+    cin >> n;
 
-    int n; cin >> n;
-    for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+    vector<vector<int>> G(n);
+    for(int i = 0; i < n - 1; i++) {
+        int s, d;cin >> s >> d;
+        --s, --d;
+        G[s].pb(d);
+        G[d].pb(s);
     }
 
-    dfs(1);
+    vector<int> group(n, -1);
 
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
+    auto dfs = [&](auto&& self, int node = 0, int parent = -1) -> void {
+        if (parent == -1 || group[parent] == 0)
+            group[node] = 1;
+        else
+            group[node] = 0;
+
+        for (int child : G[node]) {
+            if (group[child] == -1)
+                self(self, child, node);
+        }
+    };
+
+    dfs(dfs);
+
+    int A = 0;
+    int B = 0;
+
+    for(int i = 0; i < n; i++) { 
+        if (group[i] == -1) {
+            cout << 0 << endl;
+            return;
+        }
+
+        A += group[i] == 0, B += group[i] == 1;
     }
 
+    cout << 1LL * A * B - (n - 1) << endl;
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
 
-    solve();
+    int t = 1;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }

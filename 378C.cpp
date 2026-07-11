@@ -1,4 +1,3 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
@@ -100,33 +99,68 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
-
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
-
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
-    }
-
-    return subordinates[b] = sub;
-}
+const vector<pair<int, int>> dirs = {
+    {1, 0}, {0, 1}, {-1, 0}, {0, -1}
+};
 
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
+    int n, m, k; cin >> n >> m >> k;
+    vector<string> maze;
 
-    int n; cin >> n;
-    for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+    for(int i = 0; i < n; i++) {
+        string col;
+        cin >> col;
+        maze.pb(col);
     }
 
-    dfs(1);
+    int s = 0;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            s += (maze[i][j] == '.');
+        }
+    }
 
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
+    vector<vector<int>> vis(n, vector<int>(m));
+    auto bfs = [&]() {
+        queue<pii> q;
+        int cc = 0;
+        bool found = false;
+        for(int i = 0; i < n and !found; i++) {
+            for(int j = 0; j < m; j++) {
+                if (maze[i][j] == '.') { 
+                    q.push({i, j});
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        while(!q.empty()) {
+            auto [x, y] = q.front();
+            q.pop();
+
+            if (vis[x][y]) continue;
+            vis[x][y] = true;
+            cc++;
+            if (cc == s - k) return;
+
+            for(auto [dx, dy] : dirs) {
+                int newX = x + dx; int newY = y + dy;
+                if (newX >= 0 and newX < n and newY >= 0 and newY < m and !vis[newX][newY] and maze[newX][newY] == '.') {
+                    q.push({newX, newY});
+                }
+            }
+        }
+    };
+
+    bfs();
+
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            if (!vis[i][j] and maze[i][j] == '.') cout << 'X';
+            else cout << maze[i][j];
+        }
+        cout << endl;
     }
 
 }
@@ -136,6 +170,11 @@ int main() {
     cin.tie(0);
 
     solve();
+    // int t = 1;
+    // cin >> t;
+    // while (t--) {
+    //     solve();
+    // }
 
     return 0;
 }

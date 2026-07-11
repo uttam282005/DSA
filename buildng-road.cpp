@@ -1,4 +1,3 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
@@ -100,35 +99,55 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
+struct DSU {
+    int N;
+    vector<int> _parent;
+    vector<int> _size;
 
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
-
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
+    DSU(int n) : N(n), _parent(n, 0), _size(n, 1) {
+        for(int i = 0; i < n; i++) _parent[i] = i;
     }
 
-    return subordinates[b] = sub;
-}
+    void _union(int a, int b) {
+         a = _find(a);
+         b = _find(b);
+
+        if (a == b) return;
+
+        if (_size[a] < _size[b]) swap(a, b);
+
+        _size[a] += _size[b];
+        _parent[b] = a;
+        --N;
+    }
+
+    int _find(int a) {
+        if (a == _parent[a]) return a;
+        return _parent[a] = _find(_parent[a]);
+    }
+
+};
 
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
+    int n, m; cin >> n >> m;
+    DSU dsu(n);
 
-    int n; cin >> n;
-    for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+    for(int i = 0; i < m; i++) {
+        int s, d; cin >> s >> d;
+        --s, --d;
+        dsu._union(s, d);
     }
 
-    dfs(1);
-
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
+    vector<int> edges;
+    for(int i = 0; i < n; i++) {
+        if (dsu._find(i) == i) edges.pb(i + 1);
     }
 
+    cout << max(0, dsu.N - 1) << endl;
+
+    for(int i = 0; i < dsu.N - 1; i++) {
+        cout << edges[i] << " "  << edges[i + 1] << endl;
+    }
 }
 
 int main() {

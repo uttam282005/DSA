@@ -1,4 +1,3 @@
-#include <algorithm>
 #include<bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
 #include<ext/pb_ds/tree_policy.hpp>
@@ -100,42 +99,63 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-vector<int> G[N];
-int subordinates[N];
+vector<vector<int>> G;
+vector<int> color;
 
-int dfs(int b) {
-    if (subordinates[b] != -1) return subordinates[b];
+bool dfs(int node, int c) {
+    color[node] = c;
 
-    int sub = 0;
-    for(int e : G[b]) {
-        sub += dfs(e) + 1;
+    for (int child : G[node]) {
+        if (color[child] == -1) {
+            if (!dfs(child, c ^ 1))
+                return false;
+        }
+        else if (color[child] == c) {
+            return false;
+        }
     }
 
-    return subordinates[b] = sub;
+    return true;
 }
-
 void solve() {
-    fill(begin(subordinates), end(subordinates), -1);
+    int n, m; cin >> n >> m;
+    color.assign(n, -1);
+    G.resize(n) ;
 
-    int n; cin >> n;
-    for(int i = 2; i <= n; i++) {
-        int b; cin >> b;
-        G[b].pb(i);
+    vector<pair<int, int>> edges;
+    for(int i = 0; i < m; i++) {
+        int s, d; cin >> s >> d;
+        --s, --d;
+        G[s].pb(d);
+        G[d].pb(s);
+
+        edges.pb({s, d});
     }
 
-    dfs(1);
+    bool isBi = dfs(0, 0);
 
-    for(int i = 1; i <= n; i++) {
-        cout << subordinates[i] << " ";
+    if (isBi) {
+        cout << "YES" << endl;
+        string ans = "";
+
+        for(auto [s, d] : edges) {
+            if (color[s] == 0) ans += '0';
+            else ans += '1';
+        }
+        cout << ans << endl;
+    } else {
+        cout << "NO" << endl;
     }
-
 }
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(0);
 
-    solve();
+    int t = 1;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }
