@@ -40,7 +40,7 @@ typedef tree<pair<ll, ll>, null_type, less<pair<ll, ll>>, rb_tree_tag, tree_orde
 const int MOD = 1e9 + 7;
 const int INF = 1e9;
 const ll LLINF = 1e18;
-const int N = 3e5 + 1;
+const int N = 2e5 + 1;
 
 // Factorials and Modular Arithmetic
 int fact[N + 1];
@@ -99,62 +99,22 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-set<pair<int, int>> forbidden;
-set<int> unvisited;
-
-bool is_ok(int a, int b) {
-    if (a < b) swap(a, b);
-    return forbidden.find({a, b}) == forbidden.end();
-}
-
-void dfs(int u) {
-    vector<int> take;
-    for (int v : unvisited)
-        if (is_ok(u, v))
-            take.push_back(v);
-    for (int v : take)
-        unvisited.erase(v);
-    for (int v : take)
-        dfs(v);
-}
-
 void solve() {
-    int n, m, k; cin >> n >> m >> k;
+    int n; cin >> n;
 
-    int allowed = n - 1;
-    for(int i = 1; i < n; i++) unvisited.insert(i);
-    for(int i = 0; i < m; i++) {
-        int s, d; cin >> s >> d;
+    vector<vector<int>> G(n);
+    for(int i = 0; i < n - 1; i++) {
+        int s, d;
+        cin >> s >> d;
         --s, --d;
-        if (s < d) swap(s, d);
-        if (d == 0) allowed--;
-        forbidden.insert({s, d});
+        G[s].pb(d);
+        G[d].pb(s);
     }
 
-    if (k > allowed) {
-        cout << "impossible";
-        return;
-    }
+    auto dfs = [&](){
 
-    int cc = 0;
-    for(int i = 1; i < n; i++) {
-        if (is_ok(0, i) && unvisited.find(i) != unvisited.end()) {
-            unvisited.erase(i);
-            dfs(i); cc++;
-        }
-    }
+    };
 
-    if (cc > k) {
-        cout << "impossible";
-        return;
-    }
-
-    if (!unvisited.empty()) {
-        cout << "impossible";
-        return;
-    }
-
-    cout << "possible";
 }
 
 int main() {
@@ -162,6 +122,7 @@ int main() {
     cin.tie(0);
 
     int t = 1;
+    cin >> t;
     while (t--) {
         solve();
     }

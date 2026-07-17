@@ -40,7 +40,7 @@ typedef tree<pair<ll, ll>, null_type, less<pair<ll, ll>>, rb_tree_tag, tree_orde
 const int MOD = 1e9 + 7;
 const int INF = 1e9;
 const ll LLINF = 1e18;
-const int N = 3e5 + 1;
+const int N = 2e5 + 1;
 
 // Factorials and Modular Arithmetic
 int fact[N + 1];
@@ -99,62 +99,43 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
-set<pair<int, int>> forbidden;
-set<int> unvisited;
+vector<vector<int>> G;
 
-bool is_ok(int a, int b) {
-    if (a < b) swap(a, b);
-    return forbidden.find({a, b}) == forbidden.end();
-}
-
-void dfs(int u) {
-    vector<int> take;
-    for (int v : unvisited)
-        if (is_ok(u, v))
-            take.push_back(v);
-    for (int v : take)
-        unvisited.erase(v);
-    for (int v : take)
-        dfs(v);
-}
-
-void solve() {
-    int n, m, k; cin >> n >> m >> k;
-
-    int allowed = n - 1;
-    for(int i = 1; i < n; i++) unvisited.insert(i);
-    for(int i = 0; i < m; i++) {
-        int s, d; cin >> s >> d;
-        --s, --d;
-        if (s < d) swap(s, d);
-        if (d == 0) allowed--;
-        forbidden.insert({s, d});
-    }
-
-    if (k > allowed) {
-        cout << "impossible";
-        return;
-    }
-
-    int cc = 0;
-    for(int i = 1; i < n; i++) {
-        if (is_ok(0, i) && unvisited.find(i) != unvisited.end()) {
-            unvisited.erase(i);
-            dfs(i); cc++;
+int dfs(int root, int parent, int& ans) {
+    int subtreeSize = 0;
+    for(int child : G[root]) {
+        if (child != parent) {
+            int _size = dfs(child, root, ans);
+            subtreeSize += _size;
+            if (_size % 2 == 0) ans++;
         }
     }
 
-    if (cc > k) {
-        cout << "impossible";
+    return subtreeSize + 1;
+}
+
+void solve() {
+    int n; cin >> n;
+
+    G.resize(n);
+
+    for(int i = 0; i < n - 1; i++) {
+        int s, d;
+        cin >> s >> d;
+        --s, --d;
+        G[s].pb(d);
+        G[d].pb(s);
+    }
+
+    if (n & 1) {
+        cout << -1 << endl;
         return;
     }
 
-    if (!unvisited.empty()) {
-        cout << "impossible";
-        return;
-    }
+    int ans = 0;
+    dfs(0, -1, ans);
 
-    cout << "possible";
+    cout << ans << endl;
 }
 
 int main() {
