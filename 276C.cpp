@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
+#include <functional>
 #include <vector>
 
 using namespace std;
@@ -100,32 +101,32 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
 void solve() {
-    int n; cin >> n;
-
-    vector<int> deg(n);
-    vector<pii> edges;
-    for(int i = 0; i < n - 1; i++) {
-        int s, d;
-        cin >> s >> d;
-        --s, --d;
-        if (s > d) swap(s, d);
-        edges.pb({s, d});
-        deg[s]++, deg[d]++;
-    }
-
-    int s = -1;
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n);
     for(int i = 0; i < n; i++) {
-        if (deg[i] >= 3) {
-            s = i;
-            break;
-        }
+        cin >> a[i];
     }
-    int j = 2;
-    int k = n - 2;
-    for(int i = 0; i < n - 1; i++) {
-        if ((edges[i].first == s or edges[i].second == s) and j >= 0) cout << j-- << endl;
-        else cout << k-- << endl;
+
+    vector<int> ind(n + 1);
+    while(q--) {
+        int l, r;
+        cin >> l >> r;
+        l--, r--;
+        ind[l]++;
+        ind[r + 1]--;
     }
+
+    for (int i = 1; i <= n; i++)
+		ind[i] += ind[i - 1];
+
+    sort(all(ind), greater<int>());
+    sort(all(a), greater<int>());
+
+    long long ans = 0;
+	for (int i = 0; i < n; i++)
+		ans += 1LL * a[i] * ind[i];
+	cout << ans << '\n';
 }
 
 int main() {

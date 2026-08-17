@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
+#include <queue>
 #include <vector>
 
 using namespace std;
@@ -100,32 +101,50 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
 void solve() {
-    int n; cin >> n;
+    int n, k1, k2;
+    cin >> n >> k1 >> k2;
 
-    vector<int> deg(n);
-    vector<pii> edges;
-    for(int i = 0; i < n - 1; i++) {
-        int s, d;
-        cin >> s >> d;
-        --s, --d;
-        if (s > d) swap(s, d);
-        edges.pb({s, d});
-        deg[s]++, deg[d]++;
+    priority_queue<pair<int, int>> pq;
+    vector<int> a(n), b(n);
+    for(int i = 0; i < n; i++) cin >> a[i];
+    for(int i = 0; i < n; i++) cin >> b[i];
+
+    for(int i = 0; i < n; i++) {
+        pq.push({ abs(a[i] - b[i]), i });
     }
 
-    int s = -1;
-    for(int i = 0; i < n; i++) {
-        if (deg[i] >= 3) {
-            s = i;
-            break;
+    while(k1 + k2 > 0) {
+        auto [maxDiff, i] = pq.top();
+
+        pq.pop();
+
+        if (k1 >= k2) {
+            if (a[i] > b[i]) {
+                a[i]--;
+                k1--;
+            } else {
+                a[i]++;
+                k1--;
+            }
+            pq.push({ abs(a[i] - b[i]), i });
+        } else {
+            if (a[i] > b[i]) {
+                b[i]++;
+                k2--;
+            } else {
+                b[i]--;
+                k2--;
+            }
+            pq.push({ abs(a[i] - b[i]), i });
         }
     }
-    int j = 2;
-    int k = n - 2;
-    for(int i = 0; i < n - 1; i++) {
-        if ((edges[i].first == s or edges[i].second == s) and j >= 0) cout << j-- << endl;
-        else cout << k-- << endl;
+
+    ll minErr = 0;
+    for(int i = 0; i < n; i++) {
+        minErr += 1LL * (a[i] - b[i]) * (a[i] - b[i]);
     }
+
+    cout << minErr << endl;
 }
 
 int main() {

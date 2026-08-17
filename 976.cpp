@@ -100,32 +100,43 @@ ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 /*--------------------------------------------------------------------------------------------------------------------------*/
 
 void solve() {
-    int n; cin >> n;
+    int n;
+    cin >> n;
+    vector<pair<pair<int, int>, int>> segments;
 
-    vector<int> deg(n);
-    vector<pii> edges;
-    for(int i = 0; i < n - 1; i++) {
-        int s, d;
-        cin >> s >> d;
-        --s, --d;
-        if (s > d) swap(s, d);
-        edges.pb({s, d});
-        deg[s]++, deg[d]++;
+    for(int i = 0; i < n; i++) {
+        int l, r;
+        cin >> l >> r;
+
+        segments.pb({ {l, r}, i});
+
     }
 
-    int s = -1;
+    sort(segments.begin(), segments.end(),
+        [](const auto& a, const auto& b) {
+            if (a.first.first == b.first.first) {
+                return a.first.second > b.first.second;
+            }
+            return a.first.first < b.first.first;
+        });
+
+    int maxRight = -1;
+    int ind = -1;
+
     for(int i = 0; i < n; i++) {
-        if (deg[i] >= 3) {
-            s = i;
-            break;
+        int curRight = segments[i].first.second;
+        if (curRight <= maxRight) {
+            cout << segments[i].second + 1 << " " << ind  + 1 << endl;
+            return;
+        }
+
+        if (curRight > maxRight) {
+            maxRight = curRight;
+            ind = segments[i].second;
         }
     }
-    int j = 2;
-    int k = n - 2;
-    for(int i = 0; i < n - 1; i++) {
-        if ((edges[i].first == s or edges[i].second == s) and j >= 0) cout << j-- << endl;
-        else cout << k-- << endl;
-    }
+
+    cout << -1 << " " << -1 << endl;
 }
 
 int main() {
