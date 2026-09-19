@@ -1,7 +1,8 @@
-#include<bits/stdc++.h>
-#include<ext/pb_ds/assoc_container.hpp>
-#include<ext/pb_ds/tree_policy.hpp>
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #include <vector>
+
 using namespace std;
 using namespace chrono;
 using namespace __gnu_pbds;
@@ -33,7 +34,6 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vll;
 typedef vector<pii> vpii;
-typedef tree<pair<ll, ll>, null_type, less<pair<ll, ll>>, rb_tree_tag, tree_order_statistics_node_update > pbds;
 
 // Constants
 const int MOD = 1e9 + 7;
@@ -47,13 +47,13 @@ int inv_fact[N + 1];
 
 #define debug(...) _f(#__VA_ARGS__, __VA_ARGS__)
 template <typename Arg1> void _f(const char *name, Arg1 &&arg1) {
-  cout << name << " : " << arg1 << endl;
+    cout << name << " : " << arg1 << endl;
 }
 template <typename Arg1, typename... Args>
 void _f(const char *names, Arg1 &&arg1, Args &&...args) {
-  const char *comma = strchr(names + 1, ',');
-  cout.write(names, comma - names) << ":" << arg1 << "|";
-  _f(comma + 1, args...);
+    const char *comma = strchr(names + 1, ',');
+    cout.write(names, comma - names) << ":" << arg1 << "|";
+    _f(comma + 1, args...);
 }
 
 void _print(ll t) {cerr << t;}
@@ -74,9 +74,10 @@ template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_prin
 template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
 template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
-void _print(pbds v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+/*---------------------------------------------------------------------------------------------------------------------------*/
 
 ll gcd(ll a, ll b) {if (b > a) {return gcd(b, a);} if (b == 0) {return a;} return gcd(b, a % b);}
 ll expo(ll a, ll b, ll mod) {ll res = 1; while (b > 0) {if (b & 1)res = (res * a) % mod; a = (a * a) % mod; b = b >> 1;} return res;}
@@ -94,53 +95,75 @@ ll mod_div(ll a, ll b, ll m) {a = a % m; b = b % m; return (mod_mul(a, mminvprim
 ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n /= 2;} for (ll i = 3; i <= sqrt(n); i += 2) {if (n % i == 0) {while (n % i == 0)n /= i; number = (number / i * (i - 1));}} if (n > 1)number = (number / n * (n - 1)) ; return number;}
 ll getRandomNumber(ll l, ll r) {return uniform_int_distribution<ll>(l, r)(rng);}
 
+/*--------------------------------------------------------------------------------------------------------------------------*/
+
 void solve() {
-  int n;
-  cin >> n;
-  vector<int> a(n);
-  for (int i = 0; i < n; i++)
-    cin >> a[i];
+    int n, k;
+    cin >> n >> k;
 
-  map<int, int> prevPos;
-  map<int, int> minK;
+    vector<vector<int>> G(n);
+    for(int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        --u, --v;
+        G[u].pb(v);
+        G[v].pb(u);
+    }
 
-  for (int i = 1; i <= n; i++) {
-    minK[a[i - 1]] = max(i - prevPos[a[i - 1]], minK[a[i - 1]]);
-    prevPos[a[i - 1]] = i;
-  }
+    vector<vector<int>> dp(n, vector<int>(k + 1, -1));
+    for(int i = 0; i < n; i++) {
+        dp[i][0] = 1;
+    }
 
-  for (auto [key, val] : minK) {
-    minK[key] = max(minK[key], n + 1 - prevPos[key]);
-  }
 
-  vector<int> ans(n + 1, INF);
-  for (int i = 0; i < n; i++) {
-    ans[minK[a[i]]] = min(ans[minK[a[i]]], a[i]);
-  }
+    auto dfs = [&](auto &self, int root, int parent) -> void {
+        for(int c : G[root]) {
+            if (c != parent) self(self, c, root);
+        }
 
-  for(int i = 1; i <= n; i++) {
-    ans[i] = min(ans[i], ans[i - 1]);
-  }
+        for(int i = 1; i <= k; i++) {
+            dp[root][i] = 0;
+            for(int c : G[root]) if(c != parent) dp[root][i] += dp[c][i - 1];
+        }
+    };
 
-  for (int i = 1; i <= n; i++) {
-    if (ans[i] == INF)
-      cout << -1 << " ";
-    else
-      cout << ans[i] << " ";
-  }
+    dfs(dfs, 0, -1);
 
-  cout << endl;
+    vector<vector<int>> dp2(n, vector<int>(k + 1, -1));
+    for(int i = 0; i < n; i++) {
+        dp2[i][0] = 1;
+    }
+    for(int i = 0; i <= k; i++) dp2[0][i] = dp[0][i];
+
+    auto dfs2 = [&](auto &self, int root, int parent) -> void {
+        dp2[root][1] = (int)G[root].size();
+        for(int i = 2; i <= k; i++) {
+            if (dp2[root][i] == -1)
+                dp2[root][i] = dp[root][i] + dp2[parent][i - 1] - dp[root][i - 2];
+        }
+
+        for(int child : G[root]) {
+            if (parent != child)
+                self(self, child, root);
+        }
+    };
+
+    dfs2(dfs2, 0, -1);
+
+    ll ans = 0;
+    for(int i = 0; i < n; i++) ans += dp2[i][k];
+
+    cout << ans / 2LL << endl;
 }
 
 int main() {
-  ios::sync_with_stdio(false);
-  cin.tie(0);
+    ios::sync_with_stdio(false);
+    cin.tie(0);
 
-  int t = 1;
-  cin >> t;
-  while (t--) {
-    solve();
-  }
+    int t = 1;
+    while (t--) {
+        solve();
+    }
 
-  return 0;
+    return 0;
 }
