@@ -1,0 +1,9 @@
+CompileFlags:
+  Add: [-std=c++20, -Wall]
+
+Index:
+  Background: Skip
+
+Diagnostics:
+  ClangTidy:
+    FastCheckFilter: Strict
